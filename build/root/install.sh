@@ -142,6 +142,7 @@ if [[ $VPN_ENABLED == "yes" ]]; then
 	fi
 
 	echo "[info] OpenVPN config file (ovpn extension) is located at ${VPN_CONFIG}" | ts '%Y-%m-%d %H:%M:%.S'
+	echo "[tinfo] Server list is located at ${VPN_SERVER}" | ts '%Y-%m-%d %H:%M:%.S'
 
 	# convert CRLF (windows) to LF (unix) for ovpn
 	/usr/bin/dos2unix "${VPN_CONFIG}" 1> /dev/null
@@ -154,6 +155,7 @@ if [[ $VPN_ENABLED == "yes" ]]; then
 	
 	# testdasi: get random line from server list
 	vpn_remote_line=$(cat "${VPN_SERVER}" | grep -P -o '^(\s+)?remote\s.*' | shuf -n 1)
+	echo "[tinfo] vpn_remote_line is ${vpn_remote_line}"
 
 	if [ -n "${vpn_remote_line}" ]; then
 		
