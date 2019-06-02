@@ -1,5 +1,6 @@
 **testdasi**
-Created a fork of binhex's docker to try allowing multiple remote lines in config file with the use of remote-random
+
+Created a fork of binhex's docker to randomly connect to a list of VPN server.
 
 **Application**
 
