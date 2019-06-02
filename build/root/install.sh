@@ -133,7 +133,7 @@ if [[ $VPN_ENABLED == "yes" ]]; then
 	# wildcard search for openvpn config files (match on first result)
 	export VPN_CONFIG=$(find /config/openvpn -maxdepth 1 -name "*.ovpn" -print -quit)
 	
-	# testdasi: wildcard search for server list
+	# testdasi: search for server list
 	export VPN_SERVER=$(find /config/openvpn -maxdepth 1 -name "server.lst" -print -quit)
 
 	# if ovpn file not found in /config/openvpn then exit
@@ -142,7 +142,6 @@ if [[ $VPN_ENABLED == "yes" ]]; then
 	fi
 
 	echo "[info] OpenVPN config file (ovpn extension) is located at ${VPN_CONFIG}" | ts '%Y-%m-%d %H:%M:%.S'
-	echo "[tinfo] Server list is located at ${VPN_SERVER}" | ts '%Y-%m-%d %H:%M:%.S'
 
 	# convert CRLF (windows) to LF (unix) for ovpn
 	/usr/bin/dos2unix "${VPN_CONFIG}" 1> /dev/null
@@ -155,7 +154,6 @@ if [[ $VPN_ENABLED == "yes" ]]; then
 	
 	# testdasi: get random line from server list
 	vpn_remote_line=$(cat "${VPN_SERVER}" | grep -P -o '^(\s+)?remote\s.*' | shuf -n 1)
-	echo "[tinfo] vpn_remote_line is ${vpn_remote_line}"
 
 	if [ -n "${vpn_remote_line}" ]; then
 		
