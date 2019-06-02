@@ -147,18 +147,20 @@ if [[ $VPN_ENABLED == "yes" ]]; then
 	vpn_remote_line=$(cat "${VPN_CONFIG}" | grep -P -o -m 1 '^(\s+)?remote\s.*')
 
 	if [ -n "${vpn_remote_line}" ]; then
-
+		
+		# Comment out codes that would affect multiple remote lines
+		
 		# remove all remote lines as we cannot cope with multi remote lines
-		sed -i -E '/^(\s+)?remote\s.*/d' "${VPN_CONFIG}"
+		# sed -i -E '/^(\s+)?remote\s.*/d' "${VPN_CONFIG}"
 
 		# if remote line contains comments then remove
-		vpn_remote_line=$(echo "${vpn_remote_line}" | sed -r 's~\s?+#.*$~~g')
+		# vpn_remote_line=$(echo "${vpn_remote_line}" | sed -r 's~\s?+#.*$~~g')
 
 		# if remote line contains old format 'tcp' then replace with newer 'tcp-client' format
 		vpn_remote_line=$(echo "${vpn_remote_line}" | sed "s/tcp$/tcp-client/g")
 
 		# write the single remote line back to the ovpn file on line 1
-		sed -i -e "1i${vpn_remote_line}" "${VPN_CONFIG}"
+		# sed -i -e "1i${vpn_remote_line}" "${VPN_CONFIG}"
 
 		echo "[info] VPN remote line defined as '${vpn_remote_line}'" | ts '%Y-%m-%d %H:%M:%.S'
 
