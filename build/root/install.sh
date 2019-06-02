@@ -132,6 +132,9 @@ if [[ $VPN_ENABLED == "yes" ]]; then
 
 	# wildcard search for openvpn config files (match on first result)
 	export VPN_CONFIG=$(find /config/openvpn -maxdepth 1 -name "*.ovpn" -print -quit)
+	
+	# testdasi: wildcard search for server list
+	export VPN_SERVER=$(find /config/openvpn -maxdepth 1 -name "server.lst" -print -quit)
 
 	# if ovpn file not found in /config/openvpn then exit
 	if [[ -z "${VPN_CONFIG}" ]]; then
@@ -142,25 +145,29 @@ if [[ $VPN_ENABLED == "yes" ]]; then
 
 	# convert CRLF (windows) to LF (unix) for ovpn
 	/usr/bin/dos2unix "${VPN_CONFIG}" 1> /dev/null
+	
+	# testdasi: convert CRLF (windows) to LF (unix) for server list
+	/usr/bin/dos2unix "${VPN_SERVER}" 1> /dev/null
 
 	# get first matching 'remote' line in ovpn
-	vpn_remote_line=$(cat "${VPN_CONFIG}" | grep -P -o -m 1 '^(\s+)?remote\s.*')
+	# vpn_remote_line=$(cat "${VPN_CONFIG}" | grep -P -o -m 1 '^(\s+)?remote\s.*')
+	
+	# testdasi: get random line from server list
+	vpn_remote_line=$(cat "${VPN_SERVER}" | grep -P -o '^(\s+)?remote\s.*' | shuf -n 1)
 
 	if [ -n "${vpn_remote_line}" ]; then
 		
-		# Comment out codes that would affect multiple remote lines
-		
 		# remove all remote lines as we cannot cope with multi remote lines
-		# sed -i -E '/^(\s+)?remote\s.*/d' "${VPN_CONFIG}"
+		sed -i -E '/^(\s+)?remote\s.*/d' "${VPN_CONFIG}"
 
 		# if remote line contains comments then remove
-		# vpn_remote_line=$(echo "${vpn_remote_line}" | sed -r 's~\s?+#.*$~~g')
+		vpn_remote_line=$(echo "${vpn_remote_line}" | sed -r 's~\s?+#.*$~~g')
 
 		# if remote line contains old format 'tcp' then replace with newer 'tcp-client' format
 		vpn_remote_line=$(echo "${vpn_remote_line}" | sed "s/tcp$/tcp-client/g")
 
 		# write the single remote line back to the ovpn file on line 1
-		# sed -i -e "1i${vpn_remote_line}" "${VPN_CONFIG}"
+		sed -i -e "1i${vpn_remote_line}" "${VPN_CONFIG}"
 
 		echo "[info] VPN remote line defined as '${vpn_remote_line}'" | ts '%Y-%m-%d %H:%M:%.S'
 
